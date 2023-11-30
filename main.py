@@ -6,7 +6,7 @@ import pygame
 class Ball:
     def __init__(self, disp, cords, dispsize, fps, other_balls, rad=15, colour=None,
                  kk=0.8, yvel=0, xvel=0, gravity=9.806):
-        global c
+      
         self.disp = disp
         self.x, self.y = self.cords = cords
         self.rad = rad
