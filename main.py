@@ -58,7 +58,7 @@ class Ball:
     def collided(self, cords, er=0):
         outl = []
         for nut in self.balls:
-
+            # grab your left nut, make right one jealous!
             if nut != self:
 
                 ox, oy = nut.cords
@@ -74,11 +74,10 @@ class Ball:
         self.colls = outl
 
     def other_balls_collide(self):
-        # grab your left nut, make right one jealous!
         self.collided(self.cords)
         collided_balls = self.colls
         if collided_balls:
-            for ball in collided_balls:
+            for circle in collided_balls:
                 if self.lx == 0 and self.ly == 0:
                     self.dodraw = False
 
@@ -88,25 +87,11 @@ class Ball:
                 self.xvel = (-self.xvel * self.kk / 2)
                 self.yvel = (-self.yvel * self.kk / 2)
 
-                ball.xvel += olvx * ball.kk / 2
-                ball.yvel += olvy * ball.kk / 2
+                circle.xvel += olvx * circle.kk / 2
+                circle.yvel += olvy * circle.kk / 2
 
                 self.x = self.lx
                 self.y = self.ly
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     def change_cords(self):
 
