@@ -5,8 +5,7 @@ import pygame
 
 class Ball:
     def __init__(self, disp, cords, dispsize, fps, other_balls, rad=15, colour=None,
-                 kk=0.8, yvel=0, xvel=0, gravity=9.806):
-      
+                 kk=0.8, yvel=0, xvel=0, gravity=9.806, do_collide=False):
         self.disp = disp
         self.x, self.y = self.cords = cords
         self.rad = rad
@@ -23,6 +22,7 @@ class Ball:
         self.lx = 0
         self.ly = 0
         self.dodraw = True
+        self.do_collide = do_collide
 
         if not colour:
             self.colour = randint(0, 255), randint(0, 255), randint(0, 255)
@@ -38,7 +38,8 @@ class Ball:
             del self
 
     def render(self):
-        self.other_balls_collide()
+        if self.do_collide:
+            self.other_balls_collide()
         self.change_cords()
         self.upcord()
         self.draw()
@@ -47,12 +48,8 @@ class Ball:
         self.cords = (self.x, self.y)
 
     def bounce(self):
-        if abs(self.yvel * self.kk) >= 10:
-            self.yvel = -(self.yvel * self.kk)
-            self.xvel = self.xvel * self.kk
-        else:
-            self.yvel = 0
-            self.xvel = self.xvel * self.kk
+        self.yvel = -(self.yvel * self.kk)
+        self.xvel = self.xvel * self.kk
 
     def bounce_wall(self):
         self.yvel = self.yvel * self.kk
@@ -84,26 +81,18 @@ class Ball:
             for ball in collided_balls:
                 if self.lx == 0 and self.ly == 0:
                     self.dodraw = False
-                    # ox, oy = ball.cords
-                    # sx, sy = self.cords
-                    # xdiff = ox - sx
-                    # ydiff = oy - sy
 
                 olvx = self.xvel
                 olvy = self.yvel
-                self.xvel = -self.xvel * self.kk / 2
-                self.yvel = -self.yvel * self.kk / 2
+
+                self.xvel = (-self.xvel * self.kk / 2)
+                self.yvel = (-self.yvel * self.kk / 2)
 
                 ball.xvel += olvx * ball.kk / 2
                 ball.yvel += olvy * ball.kk / 2
 
                 self.x = self.lx
                 self.y = self.ly
-
-
-
-
-
 
 
 
@@ -134,7 +123,7 @@ class Ball:
 
         self.collided((newx, newy))
 
-        if self.xvel != 0 or (self.yvel != 0 or str(self.yvel) != str(self.gravp)):
+        if self.xvel != 0 or self.yvel != 0:
 
             if newy + self.rad <= self.dispsize[1] and newy - self.rad > 0:
                 self.ly = self.y
@@ -176,6 +165,8 @@ if __name__ == "__main__":
 
     run = True
 
+    colf = False
+
     frps = 300
 
     clock = pygame.time.Clock()
@@ -197,19 +188,24 @@ if __name__ == "__main__":
                     balls = []
 
                 elif keys[pygame.K_LEFT]:
-                    balls.append(Ball(mscr, pygame.mouse.get_pos(), size, frps, balls, xvel=-250 * power))
+                    balls.append(Ball(mscr, pygame.mouse.get_pos(), size, frps, balls, xvel=-250 * power,
+                                      do_collide=colf))
 
                 elif keys[pygame.K_RIGHT]:
-                    balls.append(Ball(mscr, pygame.mouse.get_pos(), size, frps, balls, xvel=250 * power))
+                    balls.append(Ball(mscr, pygame.mouse.get_pos(), size, frps, balls, xvel=250 * power,
+                                      do_collide=colf))
 
                 elif keys[pygame.K_UP]:
-                    balls.append(Ball(mscr, pygame.mouse.get_pos(), size, frps, balls, yvel=-250 * power))
+                    balls.append(Ball(mscr, pygame.mouse.get_pos(), size, frps, balls, yvel=-250 * power,
+                                      do_collide=colf))
 
                 elif keys[pygame.K_LEFT]:
-                    balls.append(Ball(mscr, pygame.mouse.get_pos(), size, frps, balls, yvel=-250 * power))
+                    balls.append(Ball(mscr, pygame.mouse.get_pos(), size, frps, balls, yvel=-250 * power,
+                                      do_collide=colf))
 
                 elif keys[pygame.K_DOWN]:
-                    balls.append(Ball(mscr, pygame.mouse.get_pos(), size, frps, balls, yvel=250 * power))
+                    balls.append(Ball(mscr, pygame.mouse.get_pos(), size, frps, balls, yvel=250 * power,
+                                      do_collide=colf))
 
                 elif keys[pygame.K_1]:
                     power = 1
@@ -231,6 +227,8 @@ if __name__ == "__main__":
                     power = 9
                 elif keys[pygame.K_0]:
                     power = 0
+                elif keys[pygame.K_F1]:
+                    colf = not colf
 
         for ball in balls:
             ball.render()
