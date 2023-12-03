@@ -3,20 +3,24 @@ from math import sqrt
 import pygame
 
 
-class Ball:
+class GravityAbleObject:
+    def __init__(self, disp, cords, xvel=0, yvel=0, grav=9.806):
+        self.disp, self.dispsize, self.fps = disp
+        self.x, self.y = cords
+        self.xvel, self.yvel = xvel, yvel
+        self.gravity_c = grav
+
+    def gravity(self):
+        self.yvel += self.gravity_c
+
+
+class Ball(GravityAbleObject):
     def __init__(self, disp, cords, dispsize, fps, other_balls, rad=15, colour=None,
                  kk=0.8, yvel=0, xvel=0, gravity=9.806, do_collide=False):
-        self.disp = disp
-        self.x, self.y = self.cords = cords
+        super().__init__((disp, dispsize, fps), cords, xvel=xvel, yvel=yvel, grav=gravity)
         self.rad = rad
         self.colour = colour
-
-        self.yvel = yvel
-        self.xvel = xvel
-
         self.balls = other_balls
-        self.dispsize = dispsize
-        self.fps = fps
         self.kk = kk
         self.colls = list()
         self.lx = 0
@@ -29,11 +33,9 @@ class Ball:
         else:
             self.colour = colour
 
-        self.gravp = gravity
-
     def draw(self):
         if self.dodraw:
-            pygame.draw.circle(surface=self.disp, color=self.colour, center=self.cords, radius=self.rad)
+            pygame.draw.circle(surface=self.disp, color=self.colour, center=(self.x, self.y), radius=self.rad)
         else:
             del self
 
@@ -41,11 +43,7 @@ class Ball:
         if self.do_collide:
             self.other_balls_collide()
         self.change_cords()
-        self.upcord()
         self.draw()
-
-    def upcord(self):
-        self.cords = (self.x, self.y)
 
     def bounce(self):
         self.yvel = -(self.yvel * self.kk)
@@ -60,21 +58,17 @@ class Ball:
         for nut in self.balls:
             # grab your left nut, make right one jealous!
             if nut != self:
-
-                ox, oy = nut.cords
+                ox, oy = nut.x, nut.y
                 sx, sy = cords
-
                 xdiff = abs(ox - sx)
                 ydiff = abs(oy - sy)
-
                 distance = sqrt(xdiff**2 + ydiff**2)
-                # print(distance, (self.rad + nut.rad))
                 if distance + er <= (self.rad + nut.rad):
                     outl.append(nut)
         self.colls = outl
 
     def other_balls_collide(self):
-        self.collided(self.cords)
+        self.collided((self.x, self.y))
         collided_balls = self.colls
         if collided_balls:
             for circle in collided_balls:
@@ -137,9 +131,6 @@ class Ball:
                     self.lx = self.x
                     self.x = self.rad
                     self.bounce_wall()
-
-    def gravity(self):
-        self.yvel += self.gravp
 
 
 if __name__ == "__main__":
