@@ -18,7 +18,7 @@ if __name__ == '__main__':
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                gravipopa.append(Gravitron(pygame.mouse.get_pos(), 6000, 15, dispy))
+                gravipopa.append(BlackHole(pygame.mouse.get_pos(), 6000, 15, dispy))
             elif event.type == pygame.KEYDOWN:
                 keys = pygame.key.get_pressed()
                 if keys[pygame.K_SPACE]:
@@ -67,6 +67,5 @@ if __name__ == '__main__':
             pipa.render()
         for gravipipa in gravipopa:
             gravipipa.render()
-
         pygame.display.flip()
         clock.tick(fps)

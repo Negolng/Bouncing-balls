@@ -91,6 +91,7 @@ class Ball:
             self.change_cords()
             self.clear()
         self.be_gavitated()
+        self.friction()
         self.draw()
 
     def bounce(self):
@@ -145,25 +146,21 @@ class Ball:
         if self.display.gravity_c != 0:
             self.gravity_on_direction()
 
-            if self.y + self.rad + 1 > self.display.size[1]:
-                self.x_vel = self.x_vel * self.display.friction_c
-                self.y_vel = self.y_vel * self.display.friction_c
+    def friction(self):
+        if self.y + self.rad >= self.display.size[1] - 1 or self.y - self.rad <= 1:
+            self.x_vel -= self.x_vel * self.display.friction_c
+        if self.x - self.rad <= 1 or self.x + self.rad >= self.display.size[0] - 1:
+            self.y_vel -= self.y_vel * self.display.friction_c
 
     def gravity_on_direction(self):
-        if not self.y + self.rad + 1 > self.display.size[1] and self.display.gravity_direction == 1:
+        if self.y + self.rad < self.display.size[1] and self.display.gravity_direction == 1:
             self.y_vel += self.display.gravity_c
-        elif self.y - self.rad - 1 > 0 and self.display.gravity_direction == 3:
+        if self.y - self.rad > 0 and self.display.gravity_direction == 3:
             self.y_vel -= self.display.gravity_c
-        elif self.x - self.rad - 1 > 0 and self.display.gravity_direction == 2:
+        if self.x - self.rad > 0 and self.display.gravity_direction == 2:
             self.x_vel -= self.display.gravity_c
-        elif not self.x + self.rad + 1 > self.display.size[0] and self.display.gravity_direction == 4:
+        if self.x + self.rad < self.display.size[0] and self.display.gravity_direction == 4:
             self.x_vel += self.display.gravity_c
-
-        # print(self.display.gravity_direction)
-
-
-
-
 
     def clear(self):
         if abs(round(self.x_vel / self.display.fps, 3)) < 0.05:
